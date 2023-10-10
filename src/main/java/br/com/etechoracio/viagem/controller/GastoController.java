@@ -1,11 +1,13 @@
 package br.com.etechoracio.viagem.controller;
-
+//Ana Carolina e Kaleb
 import br.com.etechoracio.viagem.entity.Gasto;
+import br.com.etechoracio.viagem.exceptions.ViagemInvalidaException;
 import br.com.etechoracio.viagem.repository.GastoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +43,9 @@ public class GastoController {
         Optional<Gasto> existe = repository.findById(id);
         if (existe.isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
+        if(existe.get().getViagem().getDataSaida().isAfter(LocalDate.now())){
+            throw new ViagemInvalidaException("Viagem finalizada não permite inclusão de gastos");
         }
         Gasto salva = repository.save(gasto);
         return ResponseEntity.ok(salva);
